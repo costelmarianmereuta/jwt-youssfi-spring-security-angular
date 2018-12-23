@@ -1,16 +1,15 @@
 package org.sid.config;
 
+import org.sid.jwt.JWTAuthentificationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 @org.springframework.context.annotation.Configuration
 @EnableWebSecurity
@@ -42,12 +41,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable();
-        http.formLogin();
-        //si une requete de type post est inseree il faut l'autorisée sauf si le role est admin
-        http.authorizeRequests().antMatchers(HttpMethod.POST,"/tasks/**").hasAuthority("ADMIN");
-        http.authorizeRequests().antMatchers("/login/**","/register/**").permitAll();
-        http.authorizeRequests().anyRequest().authenticated();
+        http.csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/users/**", "/login/**")
+                .permitAll()
+                .antMatchers(HttpMethod.POST, "/tasks/**").hasAuthority("ADMIN")
+                .anyRequest().authenticated()
+                .and()
+                .addFilter(new JWTAuthentificationFilter(authenticationManager()));
+
+
+
+
+
 
     }
 }

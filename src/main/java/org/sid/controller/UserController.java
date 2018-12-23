@@ -37,7 +37,7 @@ public class UserController {
         user.setPassword(registerForm.getPassword());
         accountService.save(user);
         accountService.addRoleToUser(user.getUsername(),"USER");
- 
+
         return new ResponseEntity<>(user, HttpStatus.OK) ;
     }
 }
