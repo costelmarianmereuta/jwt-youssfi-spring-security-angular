@@ -66,7 +66,7 @@ public class JWTAuthentificationFilter extends UsernamePasswordAuthenticationFil
          */
         response.addHeader(SecurityConstants.HEADER_STRING,SecurityConstants.TOKEN_PREFIX+jwtToken);
 
-        super.successfulAuthentication(request, response, chain, authResult);
+
 
 
     }
